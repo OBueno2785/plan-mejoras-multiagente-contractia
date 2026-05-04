@@ -7,6 +7,12 @@
 > `_is_proper_caps_title`, `_extraer_*`, `_find_sections`, `_post_secciones`,
 > `_clause_ids_in_text`, `_expand_clause_ranges`, etc.).
 
+## Estado
+
+- 📄 **Plan completo**: este documento.
+- ✅ **P0 implementado** en [`Multiagente_ContractIA_vs19.ipynb`](./Multiagente_ContractIA_vs19.ipynb).
+- ⏳ **P1–P3**: pendientes.
+
 ---
 
 ## Tabla de contenidos
@@ -368,16 +374,17 @@ respetar la cuota.
 
 ## 9. Roadmap priorizado
 
-### P0 — bugs / correctitud (sesión corta, impacto alto)
+### P0 — bugs / correctitud (sesión corta, impacto alto) — ✅ implementado en `Multiagente_ContractIA_vs19.ipynb`
 
-- [ ] **1.2** Fail-closed en `verificar_seguridad_documento`.
-- [ ] **1.3** Trocear el escaneo de seguridad por secciones.
-- [ ] **1.4** Construir agentes una sola vez fuera del loop.
-- [ ] **1.5** Retry con backoff en construcción de grafo.
-- [ ] **2.3.1** Migrar a `nx.MultiDiGraph`.
-- [ ] **2.2.2** Pasar `<seccion_contenedora>` al prompt de extracción.
-- [ ] **2.2.3** Etapa de canonicalización post-LLM contra `mapa_clausula_a_seccion`.
-- [ ] **2.4.1** Índice `dict[cid → list[nodo]]` para `obtener_contexto_grafo`.
+- [x] **1.2** Fail-closed en `verificar_seguridad_documento`.
+- [x] **1.3** Trocear el escaneo de seguridad por secciones.
+- [x] **1.4** Construir agentes una sola vez fuera del loop.
+- [x] **1.5** Retry con backoff en construcción de grafo (`tenacity`, 4 intentos, exp 2–30s).
+- [x] **2.3.1** Migrar a `nx.MultiDiGraph`.
+- [x] **2.2.2** Pasar `<seccion_contenedora>` al prompt de extracción.
+- [x] **2.2.3** Etapa de canonicalización post-LLM contra `mapa_clausula_a_seccion` (`_canonicalizar_nodo`).
+- [x] **2.4.1** Índice `dict[cid → list[nodo]]` para `obtener_contexto_grafo` (`construir_indice_nodos_por_cid`).
+- [x] **2.4.3** *Bonus*: deduplicación de textos recuperados en `obtener_contexto_grafo`.
 
 ### P1 — rendimiento y robustez (impacto grande en tiempo y tokens)
 
