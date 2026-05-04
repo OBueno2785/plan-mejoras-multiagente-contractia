@@ -12,7 +12,13 @@
 - 📄 **Plan completo**: este documento.
 - ✅ **P0 implementado** en [`Multiagente_ContractIA_vs19.ipynb`](./Multiagente_ContractIA_vs19.ipynb).
 - ✅ **P1 implementado** en el mismo notebook (paralelización async, Pydantic structured output, persistencia, ego-graph, GraphRAG real en chat, métricas de tokens). La única excepción es `3.3` (context caching de Vertex), que se deja fuera porque la API actual de `langchain-google-vertexai` no la integra.
-- ⏳ **P2–P3**: pendientes.
+- ✅ **P2 implementado** en [`Multiagente_ContractIA_vs20.ipynb`](./Multiagente_ContractIA_vs20.ipynb) y en el paquete `src/contractia/`:
+  - **5.1/7.1** Modularización completa en `src/contractia/` (config, logging_setup, carga, segmentacion, utils, models, grafo, metricas, auditoria, chat, informe, main).
+  - **2.6.1** `calcular_metricas_grafo()` en `metricas.py`: cobertura, nodos inventados, fragmentación, distribución de relaciones/tipos, componentes débiles, top-degree.
+  - **6.1** Logging con handler a archivo (`contractia.log`) vía `logging_setup.py`; todos los `print()` migrados a `logger.info/warning/error`.
+  - **8.1/8.2** `dashboard_severidades()` (tabla por CRITICA/ALTA/MEDIA/BAJA) y `deduplicar_hallazgos()` integrados en `render_auditoria_markdown()`.
+  - **7.2** 57 tests unitarios en `tests/` para funciones no-regex: `test_segmentacion.py`, `test_utils.py`, `test_informe.py` — todos pasan.
+- ⏳ **P3**: pendiente.
 
 ---
 
@@ -398,13 +404,13 @@ respetar la cuota.
 - [x] **4.2** `with_structured_output(SchemaPydantic)` para los 3 agentes, la extracción del grafo y el escaneo de seguridad. Modelos: `Hallazgo`, `RespuestaJurista`, `RespuestaAuditor`, `RespuestaCronista`, `RespuestaSeguridad`, `TripletaGrafo`, `RespuestaExtraccion`.
 - [x] **6.2** `TokenCounterCallback` propagado a todas las llamadas (tag por agente: `jurista`, `auditor`, `cronista`, `grafo`, `seguridad`, `chat`); resumen incluido en el informe Markdown final.
 
-### P2 — calidad y mantenibilidad
+### P2 — calidad y mantenibilidad — ✅ implementado
 
-- [ ] **5.1 / 7.1** Modularización en `.py` y configuración externa.
-- [ ] **2.6.1** Métricas de calidad del grafo (cobertura, fragmentación, inventadas).
-- [ ] **6.1** Migrar a `logging` con handler a archivo.
-- [ ] **8.1 / 8.2** Dashboard de severidades + deduplicación de hallazgos.
-- [ ] **7.2** Tests unitarios para funciones no-regex.
+- [x] **5.1 / 7.1** Modularización en `src/contractia/` + configuración externa vía `Config` dataclass + env vars.
+- [x] **2.6.1** `calcular_metricas_grafo()` en `metricas.py`: cobertura, inventadas, fragmentación, distribución.
+- [x] **6.1** Logging con handler a archivo (`contractia.log`) + `StreamHandler` para consola; prints migrados a logger.
+- [x] **8.1 / 8.2** `dashboard_severidades()` + `deduplicar_hallazgos()` integrados en `render_auditoria_markdown()`.
+- [x] **7.2** 57 tests unitarios en `tests/` (pytest) — todos pasan.
 
 ### P3 — pulido
 
