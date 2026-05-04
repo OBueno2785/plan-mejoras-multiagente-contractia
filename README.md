@@ -11,7 +11,8 @@
 
 - 📄 **Plan completo**: este documento.
 - ✅ **P0 implementado** en [`Multiagente_ContractIA_vs19.ipynb`](./Multiagente_ContractIA_vs19.ipynb).
-- ⏳ **P1–P3**: pendientes.
+- ✅ **P1 implementado** en el mismo notebook (paralelización async, Pydantic structured output, persistencia, ego-graph, GraphRAG real en chat, métricas de tokens). La única excepción es `3.3` (context caching de Vertex), que se deja fuera porque la API actual de `langchain-google-vertexai` no la integra.
+- ⏳ **P2–P3**: pendientes.
 
 ---
 
@@ -386,16 +387,16 @@ respetar la cuota.
 - [x] **2.4.1** Índice `dict[cid → list[nodo]]` para `obtener_contexto_grafo` (`construir_indice_nodos_por_cid`).
 - [x] **2.4.3** *Bonus*: deduplicación de textos recuperados en `obtener_contexto_grafo`.
 
-### P1 — rendimiento y robustez (impacto grande en tiempo y tokens)
+### P1 — rendimiento y robustez (impacto grande en tiempo y tokens) — ✅ implementado
 
-- [ ] **3.1 / 3.2** Paralelizar llamadas LLM (secciones y agentes por sección).
-- [ ] **3.3** Activar context caching de Vertex.
-- [ ] **3.5 / 3.6** Persistir grafo + checkpoint de hallazgos.
-- [ ] **2.3.3** Persistir `tipo` en cada nodo y validar `relacion` contra schema.
-- [ ] **2.5.1** Reescribir `consultar_contrato_graphrag` como GraphRAG real (selecciona vía grafo).
-- [ ] **2.4.2 / 2.4.3** Ego-graph k=2 con deduplicación de textos.
-- [ ] **4.2** `with_structured_output` con Pydantic.
-- [ ] **6.2** Métrica de tokens por agente y sección.
+- [x] **3.1 / 3.2** Paralelización async (`asyncio` + `Semaphore`): secciones del grafo, agentes por sección, secciones de la auditoría y escaneo de seguridad.
+- [ ] **3.3** Context caching de Vertex — *no implementado*: la API de `CachedContent` aún no se integra en `langchain-google-vertexai` de forma estable; se deja para una iteración futura usando el SDK de Vertex directamente.
+- [x] **3.5 / 3.6** Persistencia: grafo en `cache/grafo_<hash>.pkl` y checkpoint de hallazgos por sección en `cache/hallazgos_<hash>.jsonl` (auditoría resumible).
+- [x] **2.3.3** `tipo` persistido en `G.nodes[n]['tipo']` (lo emite el LLM con `tipo_origen`/`tipo_destino`) y `relacion` validada contra `RELACIONES_VALIDAS`; las que no encajan se descartan con conteo.
+- [x] **2.5.1** Chat reescrito como GraphRAG real: extrae cláusulas/capítulos/anexos de la pregunta → seeds → ego-graph k=2 → solo manda al prompt el sub-grafo + textos de las secciones tocadas. Soporta multi-turn (últimas 3 vueltas).
+- [x] **2.4.2 / 2.4.3** `obtener_contexto_grafo` usa `nx.ego_graph` profundidad 2 con deduplicación por `(u, v, relacion)` y por id de cláusula referenciada.
+- [x] **4.2** `with_structured_output(SchemaPydantic)` para los 3 agentes, la extracción del grafo y el escaneo de seguridad. Modelos: `Hallazgo`, `RespuestaJurista`, `RespuestaAuditor`, `RespuestaCronista`, `RespuestaSeguridad`, `TripletaGrafo`, `RespuestaExtraccion`.
+- [x] **6.2** `TokenCounterCallback` propagado a todas las llamadas (tag por agente: `jurista`, `auditor`, `cronista`, `grafo`, `seguridad`, `chat`); resumen incluido en el informe Markdown final.
 
 ### P2 — calidad y mantenibilidad
 
